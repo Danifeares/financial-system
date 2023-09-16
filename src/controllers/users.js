@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken') // to do: login
 const jwtPassword = require('../jwtPassword')
 const {
-  emailValidator, newUserDataValidation
+  emailValidator, newUserDataValidation,
+  loginDataValidation, checkUser
 } = require('../utils/usersValidations')
 
 const registerUser = async (req, res) => {
@@ -26,6 +27,27 @@ const registerUser = async (req, res) => {
   }
 }
 
+const loginUser = async (req, res) => {
+  const { email, senha } = req.body
+  try {
+    await loginDataValidation(req.body)
+    const rows = await checkUser(req.body)
+    delete rows[0].senha
+
+    const token = jwt.sign({ id: rows[0].id }, jwtPassword, { expiresIn: '24h' })
+    
+    return res.json({
+			rows,
+			token,
+		})
+    
+  } catch (error) {
+    console.log(error.message)
+    return res.status(error.code || 500).json({ message: error.message || 'Internal server error' })
+  }
+}
+
 module.exports = {
-  registerUser
+  registerUser,
+  loginUser
 }
