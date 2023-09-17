@@ -37,7 +37,7 @@ const loginUser = async (req, res) => {
     const token = jwt.sign({ id: rows[0].id }, jwtPassword, { expiresIn: '24h' })
     
     return res.json({
-			rows,
+			usuario: rows[0],
 			token,
 		})
     
