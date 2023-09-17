@@ -47,7 +47,12 @@ const loginUser = async (req, res) => {
   }
 }
 
+const findUser = async (req, res) => {
+  return res.json(req.usuario) // to do: aguardando para modificar para user
+}
+
 module.exports = {
   registerUser,
-  loginUser
+  loginUser,
+  findUser
 }
