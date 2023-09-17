@@ -3,7 +3,8 @@ const express = require('express')
 const {
   registerUser, 
   loginUser,
-  findUser
+  findUser,
+  userUpdate
 } = require('./controllers/users')
 
 const authentication = require('./middlers/authentication')
@@ -16,6 +17,6 @@ routers.post('/login', loginUser)
 routers.use(authentication)
 
 routers.get('/usuario', findUser)
-
+routers.put('/usuario', userUpdate)
 
 module.exports = routers

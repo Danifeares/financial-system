@@ -35,12 +35,12 @@ const loginUser = async (req, res) => {
     delete rows[0].senha
 
     const token = jwt.sign({ id: rows[0].id }, jwtPassword, { expiresIn: '24h' })
-    
+
     return res.json({
-			usuario: rows[0],
-			token,
-		})
-    
+      usuario: rows[0],
+      token,
+    })
+
   } catch (error) {
     console.log(error.message)
     return res.status(error.code || 500).json({ message: error.message || 'Internal server error' })
@@ -51,8 +51,31 @@ const findUser = async (req, res) => {
   return res.json(req.usuario) // to do: aguardando para modificar para user
 }
 
+const userUpdate = async (req, res) => {
+  const { nome, email, senha } = req.body
+  try {
+    await newUserDataValidation(req.body)
+
+    await emailValidator(email)
+
+    const userID = req.usuario.id // to do: aguardando para modificar para user
+
+    const encryptedPassword = await bcrypt.hash(senha, 10)
+
+    const queryUpdate = 'UPDATE usuarios SET nome = $1, email = $2, senha = $3 WHERE id = $4'
+    const params = [nome, email, encryptedPassword, userID]
+    const { rows } = await pool.query(queryUpdate, params)
+    
+    return res.status(204).json()
+  } catch (error) {
+    console.log(error.message)
+    return res.status(error.code || 500).json({ message: error.message || 'Internal server error' })
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
-  findUser
+  findUser,
+  userUpdate
 }
