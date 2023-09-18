@@ -1,36 +1,47 @@
 const jwt = require('jsonwebtoken')
 const pool = require('../connection')
-const senhaJwt = require('../jwtPassword')
+const jwtPassword = require('../jwtPassword')
 
 const authentication = async (req, res, next) => {
     const { authorization } = req.headers
 
-    if (!authorization) {
-        return res.status(401).json({message: 'Não autorizado!'})
-    }
+    try {
+        const token = authorization.split(' ')[1]
 
-    const token = authorization.split(' ')[1]
+        if (!token) {
+            throw {
+                message: 'Para acessar este recurso um token de autenticação válido deve ser enviado.',
+                code: 401
+            }
+        }
 
-    try{
-        const { id } = jwt.verify(token, senhaJwt)
+        let idToken
+        try {
+            const { id } = jwt.verify(token, jwtPassword)
+            idToken = id
+        } catch (jwtError) {
+            if (jwtError.name === 'JsonWebTokenError' || jwtError.name === 'TokenExpiredError') {
+                throw {
+                    message: 'Para acessar este recurso um token de autenticação válido deve ser enviado.',
+                    code: 401
+                }
+            }
+        }
 
-		const { rows, rowCount } = await pool.query('SELECT * from usuarios WHERE id = $1', [id])
+        const { rows } = await pool.query('SELECT * FROM usuarios WHERE id = $1', [idToken])
 
-		if (rowCount == 0) {
-			return res.status(401).json({ mensagem: 'Não autorizado' })
-		}
 
-		const { senha, ...usuario } = rows[0]
+        delete rows[0].senha
 
-		req.usuario = usuario
+        req.user = rows[0]
 
-		next()
+        next()
 
-    }
-    catch(error) {
+    } catch (error) {
         console.log(error.message)
-        return res.status(401).json({message: 'Não autorizado!'})
+        return res.status(error.code || 500).json({ message: error.message || 'Internal server error' })
     }
+
 }
 
 module.exports = authentication

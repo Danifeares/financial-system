@@ -7,6 +7,8 @@ const {
   userUpdate
 } = require('./controllers/users')
 
+const findCategories = require('./controllers/categories')
+
 const authentication = require('./middlers/authentication')
 
 const routers = express()
@@ -18,5 +20,6 @@ routers.use(authentication)
 
 routers.get('/usuario', findUser)
 routers.put('/usuario', userUpdate)
+routers.get('/categoria', findCategories)
 
 module.exports = routers
