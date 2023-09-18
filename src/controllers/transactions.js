@@ -1,4 +1,6 @@
 const pool = require('../connection')
+const { findCategorieID } = require('../utils/categoriesValidations')
+const { transactionDataValidation, inputType } = require('../utils/transactionsValidations')
 
 const listTransactions = async (req, res) => {
   try {
@@ -29,10 +31,10 @@ const listTransactions = async (req, res) => {
 }
 
 const findTransactionID = async (req, res) => {
-  const { id } = req.params
-  
+  const { id: transactionID } = req.params
+
   try {
-    
+
     const query = `
     SELECT
     t.id,
@@ -50,8 +52,8 @@ const findTransactionID = async (req, res) => {
     `
     const userID = req.user.id
 
-    const { rows: transaction, rowCount } = await pool.query(query, [userID, id])
-    
+    const { rows: transaction, rowCount } = await pool.query(query, [userID, transactionID])
+
     if (rowCount < 1) {
       throw {
         message: 'Transação não encontrada.',
@@ -66,8 +68,42 @@ const findTransactionID = async (req, res) => {
   }
 }
 
+const insertTransaction = async (req, res) => {
+  const { descricao, valor, data, categoria_id, tipo } = req.body
+  const userID = req.user.id
+  try {
+    await transactionDataValidation(req.body)
+    await findCategorieID(categoria_id)
+    await inputType(tipo)
+
+    const queryTransaction = `
+    INSERT INTO transacoes 
+    (descricao, valor, data, categoria_id, tipo, usuario_id) 
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING *;
+    `
+    const params = [descricao, valor, data, categoria_id, tipo, userID]
+
+    const { rows: transaction } = await pool.query(queryTransaction, params)
+
+    const { rows: categorie } = await pool.query(
+      'SELECT descricao as categoria_nome FROM categorias WHERE id = $1;', [categoria_id]
+    )
+
+    const response = {
+      ...transaction[0],
+      ...categorie[0]
+    }
+
+    return res.status(201).json(response)
+  } catch (error) {
+    console.log(error.message)
+    return res.status(error.code || 500).json({ message: error.message || 'Internal server error' })
+  }
+}
 
 module.exports = {
   listTransactions,
-  findTransactionID
+  findTransactionID,
+  insertTransaction
 }
