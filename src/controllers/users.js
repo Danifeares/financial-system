@@ -1,6 +1,6 @@
 const pool = require('../connection')
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken') // to do: login
+const jwt = require('jsonwebtoken')
 const jwtPassword = require('../jwtPassword')
 const {
   emailValidator, newUserDataValidation,
@@ -72,6 +72,8 @@ const userUpdate = async (req, res) => {
     return res.status(error.code || 500).json({ message: error.message || 'Internal server error' })
   }
 }
+
+
 
 module.exports = {
   registerUser,
