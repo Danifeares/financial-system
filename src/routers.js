@@ -10,7 +10,8 @@ const {
 const findCategories = require('./controllers/categories')
 
 const { 
-  findTransactions 
+  listTransactions, 
+  findTransactionID 
 } = require('./controllers/transactions')
 
 const authentication = require('./middlers/authentication')
@@ -25,6 +26,7 @@ routers.use(authentication)
 routers.get('/usuario', findUser)
 routers.put('/usuario', userUpdate)
 routers.get('/categoria', findCategories)
-routers.get('/transacao', findTransactions)
+routers.get('/transacao', listTransactions)
+routers.get('/transacao/:id', findTransactionID)
 
 module.exports = routers
