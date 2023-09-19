@@ -142,10 +142,28 @@ const transactionDelete = async (req, res) => {
   }
 }
 
+const printStatement = async (req, res) => {
+  const userID = req.user.id
+  try {
+    const query = 'SELECT SUM (valor) AS saldo FROM transacoes WHERE usuario_id = $1 AND tipo = $2'
+
+    const input = await pool.query(query, [userID, 'entrada'])
+    const output = await pool.query(query, [userID, 'saida'])
+    
+    const statement = {entrada: input.rows[0].saldo ?? 0, saida: output.rows[0].saldo ?? 0}
+    return res.status(200).json(statement)
+
+  } catch (error) {
+    console.log(error.message)
+    return res.status(error.code || 500).json({ message: error.message || 'Internal server error' })
+  }
+}
+
 module.exports = {
   listTransactions,
   findTransactionID,
   insertTransaction,
   transactionUpdate,
-  transactionDelete
+  transactionDelete,
+  printStatement
 }
