@@ -119,8 +119,9 @@ const transactionUpdate = async (req, res) => {
     await findCategorieID(categoria_id)
     await inputType(tipo)
     
-    const queryUpdate = 'UPDATE transacoes SET descricao = $1, valor = $2, data = $3, categoria_id = $4, tipo = $5 WHERE id = $6'
-    const params = [descricao, valor, data, categoria_id, tipo, userID]
+    const queryUpdate = 
+    'UPDATE transacoes SET descricao = $1, valor = $2, data = $3, categoria_id = $4, tipo = $5 WHERE id = $6;'
+    const params = [descricao, valor, data, categoria_id, tipo, id]
     await pool.query(queryUpdate, params)
     
     return res.status(204).json()
