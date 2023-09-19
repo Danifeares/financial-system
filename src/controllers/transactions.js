@@ -124,9 +124,28 @@ const transactionUpdate = async (req, res) => {
   }
 }
 
+const transactionDelete = async (req, res) => {
+  const { id } = req.params
+  const userID = req.user.id
+
+  try {
+    await findTransactionIDBelongingToUser(id, userID)
+    
+    const queryDelete = 'DELETE FROM transacoes WHERE id = $1 AND usuario_id = $2'
+    const params = [id, userID]
+    await pool.query(queryDelete, params)
+    
+    return res.status(204).json()
+  } catch (error) {
+    console.log(error.message)
+    return res.status(error.code || 500).json({ message: error.message || 'Internal server error' })
+  }
+}
+
 module.exports = {
   listTransactions,
   findTransactionID,
   insertTransaction,
-  transactionUpdate
+  transactionUpdate,
+  transactionDelete
 }

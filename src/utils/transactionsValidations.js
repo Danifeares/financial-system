@@ -23,7 +23,7 @@ const findTransactionIDBelongingToUser = async (id, userID) => {
   const { rows, rowCount } = await pool.query('SELECT * FROM transacoes WHERE id = $1 AND usuario_id = $2', [id, userID])
   if (rowCount == 0) {
     throw {
-      message: 'A transação informada não pertence ao usuário ou não existe.',
+      message: 'Transação não encontrada.',
       code: 404
     }
   }
