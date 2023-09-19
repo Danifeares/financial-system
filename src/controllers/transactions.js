@@ -1,6 +1,6 @@
 const pool = require('../connection')
 const { findCategorieID } = require('../utils/categoriesValidations')
-const { transactionDataValidation, inputType } = require('../utils/transactionsValidations')
+const { transactionDataValidation, inputType, findTransactionIDBelongingToUser } = require('../utils/transactionsValidations')
 
 const listTransactions = async (req, res) => {
   try {
@@ -102,8 +102,31 @@ const insertTransaction = async (req, res) => {
   }
 }
 
+const transactionUpdate = async (req, res) => {
+  const { id } = req.params
+  const { descricao, valor, data, categoria_id, tipo } = req.body
+  const userID = req.user.id
+
+  try {
+    await findTransactionIDBelongingToUser(id, userID)
+    await transactionDataValidation(req.body)
+    await findCategorieID(categoria_id)
+    await inputType(tipo)
+    
+    const queryUpdate = 'UPDATE transacoes SET descricao = $1, valor = $2, data = $3, categoria_id = $4, tipo = $5 WHERE id = $6'
+    const params = [descricao, valor, data, categoria_id, tipo, userID]
+    await pool.query(queryUpdate, params)
+    
+    return res.status(204).json()
+  } catch (error) {
+    console.log(error.message)
+    return res.status(error.code || 500).json({ message: error.message || 'Internal server error' })
+  }
+}
+
 module.exports = {
   listTransactions,
   findTransactionID,
-  insertTransaction
+  insertTransaction,
+  transactionUpdate
 }
