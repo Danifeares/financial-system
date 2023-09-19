@@ -53,11 +53,22 @@ const checkUser = async ({ email, senha }) => {
   return rows
 }
 
+const otherEmailValidation = async (email, id) => {
+  const queryEmail = 'SELECT email FROM usuarios WHERE email = $1 AND id != $2'
+  const { rowCount } = await pool.query(queryEmail, [email, id])
+  if (rowCount >= 1) {
+    throw {
+      message: 'Já existe usuário cadastrado com o e-mail informado.',
+      code: 409
+    }
+  }
+}
 
 
 module.exports = {
   emailValidator,
   newUserDataValidation,
   loginDataValidation,
-  checkUser
+  checkUser,
+  otherEmailValidation
 }

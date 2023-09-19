@@ -3,8 +3,11 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const jwtPassword = require('../jwtPassword')
 const {
-  emailValidator, newUserDataValidation,
-  loginDataValidation, checkUser
+  emailValidator, 
+  newUserDataValidation,
+  loginDataValidation, 
+  checkUser, 
+  otherEmailValidation
 } = require('../utils/usersValidations')
 
 const registerUser = async (req, res) => {
@@ -53,12 +56,11 @@ const findUser = async (req, res) => {
 
 const userUpdate = async (req, res) => {
   const { nome, email, senha } = req.body
+  const userID = req.user.id 
   try {
     await newUserDataValidation(req.body)
 
-    await emailValidator(email)
-
-    const userID = req.user.id 
+    await otherEmailValidation(email, userID)
 
     const encryptedPassword = await bcrypt.hash(senha, 10)
 
