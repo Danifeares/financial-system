@@ -1,5 +1,8 @@
 ![api conexão](https://github.com/Danifeares/desafio-backend-m03-b2bt05/assets/117787402/5f720ab6-7395-494d-85c4-1bbf9bc84cc4)
 
+![JavaScript](https://img.shields.io/badge/-JavaScript-yellow?style=flat&logo=javascript&logoColor=white) ![Node.js](https://img.shields.io/badge/-Node.js-green?style=flat&logo=node.js&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-blue?style=flat&logo=postgresql&logoColor=white) ![bcrypt](https://img.shields.io/badge/-bcrypt-orange?style=flat) ![jsonwebtoken](https://img.shields.io/badge/-jsonwebtoken-purple?style=flat) ![Git](https://img.shields.io/badge/-Git-black?style=flat&logo=git) ![Express.js](https://img.shields.io/badge/-Express.js-lightgray?style=flat&logo=express&logoColor=black) ![GitHub](https://img.shields.io/badge/-GitHub-181717?style=flat&logo=github)
+
+
 # API para Sistema Financeiro
 
 ## Descrição do Projeto
