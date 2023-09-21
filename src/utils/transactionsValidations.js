@@ -1,5 +1,4 @@
 const pool = require('../connection')
-const { Pool } = require("pg")
 
 const transactionDataValidation = async ({ descricao, valor, data, categoria_id, tipo }) => {
   if (!descricao || !valor || !data || !categoria_id || !tipo) {
